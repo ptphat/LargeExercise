@@ -1,10 +1,11 @@
 #include<iostream>
 #include<sstream>
+#include<math.h>
 #define NUM_SAMPLES 20000
 using namespace std;
-int main() {
+void main() {
 	string st, st_value;
-	int num_iterations = 0, learning_rate = 0, start_a = 0, start_b = 0, num_fold = 0;
+	float num_iterations = 0, learning_rate = 0, start_a = 0, start_b = 0, num_folds = 0;
 	getline(cin, st);
 	getline(cin, st);
 	getline(cin, st);
@@ -17,18 +18,22 @@ int main() {
 	getline(cin, st); stringstream ss4(st);
 	ss4 >> st_value >> start_b;
 	getline(cin, st); stringstream ss5(st);
-	ss5 >> st_value >> num_fold;
+	ss5 >> st_value >> num_folds;
 	getline(cin, st); //skip ----
 	getline(cin, st); //skip Data samples
+	getline(cin, st); //skip ----
 	float x[NUM_SAMPLES], t[NUM_SAMPLES];
 	int length = 0;
 	for (int i = 0; i < NUM_SAMPLES; i++) {
 		getline(cin, st); stringstream ss(st);
 		ss >> x[i] >> t[i];
-		if (x[i] == 0) {
+		if (x[i]<0.01) {
 			length = i; //Find length of (x,t)
 			break;
 		}
 	}
-	return 0;
+	for (int i = 0; i < length; i++) {
+		cout << x[i] << " " << t[i] << endl;
+	}
+	/*cout << num_iterations << " " << learning_rate << " " << start_a << " " << start_b << " " << num_folds;*/
 }
