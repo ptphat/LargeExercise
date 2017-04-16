@@ -37,10 +37,10 @@ void main() {
 	}
 	cout << right << setprecision(3) << fixed;
 //	cout << M << " " << alpha << " " << a << " " << b << " " << K << endl;
-	cout << "----------------------------------------------------------------------------------------------" << endl;
+	cout << "-------------------------------------------------------------------------------------------" << endl;
 	cout << "Output of the validation" << endl;
-	cout << "----------------------------------------------------------------------------------------------" << endl;
-	int D;
+	cout << "-------------------------------------------------------------------------------------------" << endl;
+	int D = 0;
 	D = length / K;
 //	K: so ngan, D: so gia tri trong 1 ngan, M: So lan lap, TST: chua mau ngan hien tai, TSN: chua mau cac ngan con lai
 //	cout << K << " " << D << endl;
@@ -75,14 +75,16 @@ void main() {
 			vmax = 3 * sigma;
 			vmin = -3 * sigma;
 			cout << setw(7) << E;
+			// Chia khoang
 			float n[10] = { 0 }, khoang, tong = 0;
 			khoang = (vmax - vmin) / 10;
 			for (int j = 0; j < length; j++)
 				if (j >= D*i & j < D*(i + 1))
 					for (int k = -5; k < 5; k++)
-						if (k*khoang<(a*x[j]+b - t[j])&(k + 1)*khoang>(a*x[j]+b - t[j])) n[k + 5] = n[k + 5] + 1;
+						if (k*khoang <= (a*x[j] + b - t[j])&(k + 1)*khoang > (a*x[j] + b - t[j])) n[k + 5] = n[k + 5] + 1;
+						else if (a*x[j] + b - t[j] == vmax) n[9] = n[9] + 1;
 			for (int j = 0; j < 10; j++) tong = tong + n[j];
-			for (int j = 0; j < 10; j++) /*cout << n[i] << " ";*/cout << setw(7) << n[j] / tong;
+			for (int j = 0; j < 10; j++) cout << setw(7) << n[j] / tong;
 			cout << endl;
 		}
 		else {
@@ -113,14 +115,16 @@ void main() {
 			vmax = 3 * sigma;
 			vmin = -3 * sigma;
 			cout << setw(7) << E;
+			// Chia khoang
 			float n[10] = { 0 }, khoang, tong = 0;
 			khoang = (vmax - vmin) / 10;
 			for (int j = 0; j < length; j++)
 				if (j >= D*(K - 1) & j < length)
 					for (int k = -5; k < 5; k++)
-						if (k*khoang<(a*x[j] + b - t[j])&(k + 1)*khoang>(a*x[j] + b - t[j])) n[k + 5] = n[k + 5] + 1;
+						if (k*khoang <= (a*x[j] + b - t[j])&(k + 1)*khoang > (a*x[j] + b - t[j])) n[k + 5] = n[k + 5] + 1;
+						else if (a*x[j] + b - t[j] == vmax) n[9] = n[9] + 1;
 			for (int j = 0; j < 10; j++) tong = tong + n[j];
-			for (int j = 0; j < 10; j++) /*cout << n[i] << " ";*/cout << setw(7) << n[j] / tong;
+			for (int j = 0; j < 10; j++) cout << setw(7) << n[j] / tong;
 			cout << endl;
 		}
 	}
