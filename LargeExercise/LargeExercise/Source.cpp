@@ -2,7 +2,7 @@
 #include<sstream>
 #include<math.h>
 #include<iomanip>
-#define NUM_SAMPLES 1500
+#define NUM_SAMPLES 20000
 #define len(a,b) sqrt((a)*(a)+(b)*(b))
 using namespace std;
 void main() {
@@ -35,14 +35,19 @@ void main() {
 			break;
 		}
 	}
-	cout << setprecision(3) << fixed;
-	cout << M << " " << alpha << " " << a << " " << b << " " << K << endl;
+	cout << right << setprecision(3) << fixed;
+//	cout << M << " " << alpha << " " << a << " " << b << " " << K << endl;
+	cout << "----------------------------------------------------------------------------------------------" << endl;
+	cout << "Output of the validation" << endl;
+	cout << "----------------------------------------------------------------------------------------------" << endl;
 	int D;
 	D = length / K;
-	// K: so ngan, D: so gia tri trong 1 ngan, M: So lan lap, TST: chua mau ngan hien tai, TSN: chua mau cac ngan con lai
-	cout << K << " " << D << endl;
+//	K: so ngan, D: so gia tri trong 1 ngan, M: So lan lap, TST: chua mau ngan hien tai, TSN: chua mau cac ngan con lai
+//	cout << K << " " << D << endl;
 	for (int i = 0; i < K; i++) {
+		a = a_starter; b = b_starter;
 		if (i != K - 1) {
+			// Giai thuat toi uu GD cho TRN
 			float gradient_a = 0, gradient_b = 0, y[NUM_SAMPLES] = { 0 };
 			for (int k = 0; k < M; k++) {
 				for (int j = 0; j < length; j++) {
@@ -56,13 +61,35 @@ void main() {
 				b = b - alpha*gradient_b / len(gradient_a, gradient_b); // Phuong trinh 7 va chuan hoa
 				gradient_a = gradient_b = 0;
 			}
-			cout << a << " " << b << endl;
+			cout << setw(7)<< a << setw(7) << b;
+			float E = 0, temp1 = 0, temp2 = 0, e_ngang = 0, sigma = 0, vmax = 0, vmin = 0;
+			for (int j = 0; j < length; j++) 
+				if (j >= D*i & j < D*(i + 1)) {
+					temp1 = temp1 + pow((a*x[j] + b - t[j]), 2) / D; // Bien tam thoi phuong trinh 8
+					e_ngang = e_ngang + (a*x[j] + b - t[j]) / D; // Tinh phuong trinh 12
+				}
+			for (int j = 0; j < length; j++)
+				if (j >= D*i & j < D*(i + 1)) temp2 = temp2 + pow((a*x[j] + b - t[j] - e_ngang), 2) / D;
+			E = sqrt(temp1); // Tinh phuong trinh 8
+			sigma = sqrt(temp2); // Tinh phuong trinh 11
+			vmax = 3 * sigma;
+			vmin = -3 * sigma;
+			cout << setw(7) << E;
+			float n[10] = { 0 }, khoang, tong = 0;
+			khoang = (vmax - vmin) / 10;
+			for (int j = 0; j < length; j++)
+				if (j >= D*i & j < D*(i + 1))
+					for (int k = -5; k < 5; k++)
+						if (k*khoang<(a*x[j]+b - t[j])&(k + 1)*khoang>(a*x[j]+b - t[j])) n[k + 5] = n[k + 5] + 1;
+			for (int j = 0; j < 10; j++) tong = tong + n[j];
+			for (int j = 0; j < 10; j++) /*cout << n[i] << " ";*/cout << setw(7) << n[j] / tong;
+			cout << endl;
 		}
 		else {
 			float gradient_a = 0, gradient_b = 0, y[NUM_SAMPLES] = { 0 };
 			for (int k = 0; k < M; k++) {
 				for (int j = 0; j < length; j++) {
-					if (j < D*(K-1)) {
+					if (j < D*(K - 1)) {
 						y[j] = a*x[j] + b;
 						gradient_a = gradient_a + (y[j] - t[j])*x[j];
 						gradient_b = gradient_b + (y[j] - t[j]);
@@ -72,56 +99,29 @@ void main() {
 				b = b - alpha*gradient_b / len(gradient_a, gradient_b); // Phuong trinh 7 va chuan hoa
 				gradient_a = gradient_b = 0;
 			}
-			cout << a << " " << b << endl;
+			cout << setw(7)<< a << setw(7) << b;
+			float E = 0, temp1 = 0, temp2 = 0, e_ngang = 0, sigma = 0, vmax = 0, vmin = 0;
+			for (int j = 0; j < length; j++)
+				if (j >= D*(K - 1) & j < length) {
+					temp1 = temp1 + pow((a*x[j] + b - t[j]), 2) / D; // Bien tam thoi phuong trinh 8
+					e_ngang = e_ngang + (a*x[j] + b - t[j]) / D; // Tinh phuong trinh 12
+				}
+			for (int j = 0; j < length; j++)
+				if (j >= D*(K - 1) & j < length) temp2 = temp2 + pow((a*x[j] + b - t[j] - e_ngang), 2)/D;
+			E = sqrt(temp1); // Tinh phuong trinh 8
+			sigma = sqrt(temp2); // Tinh phuong trinh 11
+			vmax = 3 * sigma;
+			vmin = -3 * sigma;
+			cout << setw(7) << E;
+			float n[10] = { 0 }, khoang, tong = 0;
+			khoang = (vmax - vmin) / 10;
+			for (int j = 0; j < length; j++)
+				if (j >= D*(K - 1) & j < length)
+					for (int k = -5; k < 5; k++)
+						if (k*khoang<(a*x[j] + b - t[j])&(k + 1)*khoang>(a*x[j] + b - t[j])) n[k + 5] = n[k + 5] + 1;
+			for (int j = 0; j < 10; j++) tong = tong + n[j];
+			for (int j = 0; j < 10; j++) /*cout << n[i] << " ";*/cout << setw(7) << n[j] / tong;
+			cout << endl;
 		}
-		a = a_starter; b = b_starter;
 	}
 }
-/*
-		// Xet TST
-		double E = 0, temp1 = 0, temp2 = 0, e_ngang = 0, sigma = 0, vmax = 0, vmin = 0;
-		for (int i = 1; i <= length; i++)
-			if (TST_x[i] != 0) {
-				temp1 = temp1 + pow((a*TST_x[i] + b - TST_t[i]), 2) / D; // Bien tam thoi phuong trinh 8
-				e_ngang = e_ngang + (a*TST_x[i] + b - t[i]) / D; // Tinh phuong trinh 12
-			}
-		for (int i = 1; i <= length; i++)
-			if (TST_x[i] != 0) temp2 = temp2 + pow((a*TST_x[i] + b - t[i] - e_ngang), 2); // Bien tam thoi phuong trinh 11
-		E = sqrt(temp1); // Tinh phuong trinh 8
-		sigma = sqrt(temp2); // Tinh phuong trinh 11
-		vmax = 3 * sigma;
-		vmin = -3 * sigma;
-
-		cout << right << setw(7) << a << setw(7) << b << setw(7) << E << setw(10) << sigma << endl;
-		a = b = gradient_a = gradient_b = 0;
-	}
-}
-
-
-		/*		double gradient_a = 0, gradient_b = 0;
-				for (int i = 0; i < M; i++) {
-					// Lap lai M lan
-					for (int k = 0; k < length; k++) {
-						if (k < j*D &k >(j + 1)*D - 1) {
-							// Xet tap TRN
-							y[k] = a*x[k] + b;
-							gradient_a = gradient_a + (y[k] - t[k])*x[k]; // Phuong trinh 3
-							gradient_b = gradient_b + (y[k] - t[k]); // Phuong trinh 4
-						}
-						if (k < j*D &k >(j + 1)*D - 1) {
-							// Xet tap TRN
-							a = a - alpha*gradient_a / len(gradient_a, gradient_b); // Phuong trinh 6 va chuan hoa
-							b = b - alpha*gradient_b / len(gradient_a, gradient_b); // Phuong trinh 7 va chuan hoa
-							gradient_a = gradient_b = 0;
-						}
-					}
-				}
-				double sigma = 0, E=0, e_ngang=0;
-				for (int i = 0; i < D; i++) {
-					sigma = sigma + pow((a*x[i] + b - t[i]), 2) / D;//
-					E = sqrt(sigma);								//Tinh sai so du bao tu phuong trinh 8
-					e_ngang = e_ngang + (a*x[i] + b - t[i]) / D;	//Tinh phuong trinh 12
-				}
-				for (int i = 0; i < D; i++) {
-
-				}*/
